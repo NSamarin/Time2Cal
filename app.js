@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var http = require('http');
 
 var request = require('request');
 var cheerio = require('cheerio'); //scraping tool
@@ -141,7 +142,7 @@ app.use(function (err, req, res, next) {
 
 http.createServer(app).listen(app.get('port') ,app.get('ip'), function () {
     console.log("Express server listening at %s:%d ", app.get('ip'),app.get('port'));
-    server();
+    //server();
 });
 
 console.log('Express server listening on port ' + app.get('port'));
