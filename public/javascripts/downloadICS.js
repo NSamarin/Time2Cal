@@ -1,9 +1,9 @@
 var fs = require('fs');
-var generateICS = require('./generateICS');
+var generateICS = require('./generator');
 
 function downloadICS(items) {
 
-    var data = generateICS(2015, 0, 12, items);
+    var data = generateICS(2015, 8, 22, items);
     var csvData = [];
 
     csvData.push("BEGIN:VCALENDAR\rVERSION:2.0\rPRODID:-//Timetable2Calendar//EN\rCALSCALE:GREGORIAN\rX-WR-CALNAME;VALUE=TEXT:timetable");

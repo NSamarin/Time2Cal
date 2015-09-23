@@ -1,9 +1,9 @@
 var fs = require('fs');
-var generateCSV = require('./generateCSV');
+var generateCSV = require('./generator');
 
 function downloadCSV(items) {
     //enter year, (month-1) and day when the semester starts (Monday of the study week 1)
-    var data = generateCSV(2015, 0, 12, items);
+    var data = generateCSV(2015, 8, 21, items);
     var csvData = [];
 
     data.forEach(function (item, index, array) {
