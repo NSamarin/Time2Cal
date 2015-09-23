@@ -20,6 +20,7 @@ function generateICS(startYear, startMonth, startDay, items) {
 }
 
 function generateEvents(startYear, startMonth, startDay, items){
+
     //Filter "items" array so that only lecture events are created
     var lectures = items.filter(function (item) {
         return item.type == "Lecture";
@@ -37,8 +38,7 @@ function generateEvents(startYear, startMonth, startDay, items){
         var times = extractTime(currentItem["times"]);
 
         //get day offsets for the current item
-        var dayOffset = getDayOffset(currentItem["day"]); //TODO: CHANGE VAR NAME
-
+        var dayOffset = getDayOffset(currentItem["day"]);
 
         //loop the weeks array to create events for one item corresponding to all weeks
         for (var k = 0; k < weeks.length; k++) {
@@ -100,7 +100,6 @@ function extractTime(timeProperty) {
     var times = timeProperty.split(",");
     var start = times[0].substr(6);
     var end = times[1].substr(4);
-
     return {startTime: formatTime(start), endTime: formatTime(end)};
 }
 
@@ -108,7 +107,6 @@ function formatTime(time) {
     var hour = parseInt(time.substr(0, 2));
     if (hour <= 12) time += " AM";
     else time = (hour - 12) + time.substr(2) + " PM";
-
     return time;
 }
 
