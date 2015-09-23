@@ -1,5 +1,5 @@
 var fs = require('fs');
-var generateICS = require('./generator');
+var generateICS = require('./generate');
 
 function downloadICS(items) {
 
