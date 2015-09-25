@@ -1,16 +1,15 @@
 var fs = require('fs');
-var generateICS = require('./generate');
+var generateFile = require('./generateCSV');
 
 function downloadICS(items) {
+    var data = generateFile(2015, 8, 21, items, false);
 
-    var data = generateICS(2015, 8, 22, items);
     var csvData = [];
 
-    csvData.push("BEGIN:VCALENDAR\rVERSION:2.0\rPRODID:-//Timetable2Calendar//EN\rCALSCALE:GREGORIAN\rX-WR-CALNAME;VALUE=TEXT:timetable");
+    csvData.push("BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Timetable2Calendar//EN\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME;VALUE=TEXT:timetable");
 
     data.forEach(function (item, index, array) {
-
-        csvData.push("BEGIN:VEVENT\rSUMMARY:" + item.subject + "\rDESCRIPTION:\rDTSTAMP:" + item.startDate + "\rDTSTART:" + item.startDate + "\rDTEND:" + item.endDate + "\rLOCATION:" + item.location + "\rEND:VEVENT\r");
+        csvData.push("BEGIN:VEVENT\r\nSUMMARY:" + item.subject + "\r\nDESCRIPTION:\r\nDTSTAMP:" + item.startDate + "\r\nDTSTART:" + item.startDate + "\r\nDTEND:" + item.endDate + "\r\nLOCATION:" + item.location + "\r\nEND:VEVENT\r\n");
     });
 
     csvData.push("END:VCALENDAR");

@@ -44,7 +44,7 @@ app.use('/users', users);
 
 app.get('/csvexport', function (req, res) {
     //url = 'https://browser.ted.is.ed.ac.uk/generate?courses[]=BILG09014_SV1_SEM2&courses[]=BUST10118_SV1_SEM2&courses[]=BUST10021_SV1_SEM2&show-close=1&period=SEM2#';
-    url = 'https://browser.ted.is.ed.ac.uk/generate?courses[]=BITE10006_SV1_SEM2&courses[]=BITE10007_SV1_YR&courses[]=BITE10001_SV1_SEM1&courses[]=BITE10002_SV1_SEM1&courses[]=BITE10013_SS1_YR&courses[]=CMSE10002_SV1_SEM1&show-close=1&period=SEM1';
+    url = "https://browser.ted.is.ed.ac.uk/generate?courses[]=BITE10013_SS1_YR&courses[]=BITE10002_SV1_SEM1&courses[]=BITE10001_SV1_SEM1&courses[]=BITE10007_SV1_YR&courses[]=BITE10006_SV1_SEM2&courses[]=CMSE10002_SV1_SEM1&show-close=1&show-close=1&period=SEM1";
     request(url, function (error, response, html) {
         if (!error) {
             var $ = cheerio.load(html);
