@@ -30,6 +30,7 @@ function generateICS(startYear, startMonth, startDay, items) {
             var currentHours = currentDate.getHours().toString();
             var currentMinutes = currentDate.getMinutes().toString();
             if (currentHours.length == 1) currentHours = "0" + currentHours;
+            if (currentMinutes.length == 1) currentMinutes = "0" + currentMinutes;
             var dateStamp = formatDateICS(currentDate, currentHours + currentMinutes + "00");
 
             //push events to the export array
@@ -93,7 +94,7 @@ function formatDateICS(date, time) {
     var day = date.getDate().toString();
     if (month.length == 1) month = "0" + month;
     if (day.length == 1) day = "0" + day;
-    return date.getFullYear().toString() + month + day + 'T' + time + "Z";
+    return date.getFullYear().toString() + month + day + 'T' + time;
 }
 
 
