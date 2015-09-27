@@ -1,27 +1,23 @@
-var exportArray;
-var formattedDateStart;
-var formattedDateEnd;
+var exportArray = [];
 
-function generateFile(startYear, startMonth, startDay, items, isCSVRequest){
-    exportArray = [];
-    //create export array and populate the headers iff isCSVRequest
-    if (isCSVRequest) {
-        exportArray = [{
-            subject: "Subject",
-            startDate: "Start Date",
-            startTime: "Start Time",
-            endDate: "End Date",
-            endTime: "End Time",
-            allDayEvent: "All Day Event",
-            location: "Location",
-            private: "Private"
-        }];
-    }
+function generateCSV(startYear, startMonth, startDay, items) {
+    //create export array and populate the headers
+    exportArray = [{
+        subject: "Subject",
+        startDate: "Start Date",
+        startTime: "Start Time",
+        endDate: "End Date",
+        endTime: "End Time",
+        allDayEvent: "All Day Event",
+        location: "Location",
+        private: "Private"
+    }];
 
     //Filter "items" array so that only lecture events are created
     var lectures = items.filter(function (item) {
         return item.type == "Lecture";
     });
+    console.log(lectures);
 
     //loop through lectures
     for (var i = 0; i < lectures.length; i++) {
@@ -29,7 +25,7 @@ function generateFile(startYear, startMonth, startDay, items, isCSVRequest){
         //get the weeks property
         var weeks = currentItem["weeks"];
         //extract correctly formatted start and end times
-        var times = extractTime(currentItem["times"], isCSVRequest);
+        var times = extractTimeCSV(currentItem["times"]);
         //get day offsets for the current item
         var dayOffset = getDayOffset(currentItem["day"]);
         //loop the weeks array to create events for one item corresponding to all weeks
@@ -38,31 +34,17 @@ function generateFile(startYear, startMonth, startDay, items, isCSVRequest){
             var weekOffset = (parseInt(weeks[k]) - 1) * 7;
             //create the date object for all the events for a particular item
             var date = new Date(startYear, startMonth, (startDay + dayOffset + weekOffset));
-            //varies depending on request
-            if (isCSVRequest) {
-                formattedDateStart = date.getMonth() + 1 + '/' + date.getDate() + '/' + date.getFullYear();
-                formattedDateEnd = formattedDateStart; //no difference in CSV
-            } else {
-                var month = (date.getMonth() + 1).toString();
-                var day = date.getDate().toString();
-                if (month.length == 1) month = "0" + month;
-                if (day.length == 1) day = "0" + day;
-
-                formattedDateStart = date.getFullYear().toString() + month + day + 'T' +
-                    times["startTime"] + "Z";
-                formattedDateEnd = date.getFullYear().toString() + month + day + 'T' +
-                    times["endTime"] + "Z";
-            }
+            var formattedDate = date.getMonth() + 1 + '/' + date.getDate() + '/' + date.getFullYear();
 
             //push events to the export array
             exportArray.push({
                 subject: currentItem["course"],
-                startDate: formattedDateStart,
+                startDate: formattedDate,
                 startTime: times["startTime"],
-                endDate: formattedDateEnd,
+                endDate: formattedDate,
                 endTime: times["endTime"],
                 allDayEvent: false,
-                location: '\"' + currentItem["location"]  + '\"',
+                location: '\"' + currentItem["location"] + '\"',
                 private: true
             });
         }
@@ -99,25 +81,20 @@ function getDayOffset(day) {
     return dayOffset;
 }
 
-function extractTime(timeProperty, isCSVRequest) {
+function extractTimeCSV(timeProperty) {
     var times = timeProperty.split(",");
     var start = times[0].substr(6);
     var end = times[1].substr(4);
-    if (isCSVRequest) return {startTime: formatTimeCSV(start), endTime: formatTimeCSV(end)};
-    return {startTime: formatTimeICS(start), endTime: formatTimeICS(end)};
+    return {startTime: formatTimeCSV(start), endTime: formatTimeCSV(end)};
 }
 
 function formatTimeCSV(time) {
     var hour = parseInt(time.substr(0, 2));
-    if (hour <= 12) time += " AM";
+    if (hour < 12 && hour != 0) time += " AM";
+    else if (hour == 12) time += " PM";
+    else if (hour == 0) time = "12" + time.substr(2) + " AM";
     else time = (hour - 12) + time.substr(2) + " PM";
     return time;
 }
 
-function formatTimeICS(time) {
-    var hour = time.substr(0, 2);
-    var minutes = time.substr(3, 5);
-    return hour + minutes + "00";
-}
-
-module.exports = generateFile;
+module.exports = generateCSV;

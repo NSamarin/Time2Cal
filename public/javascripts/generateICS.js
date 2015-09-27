@@ -1,102 +1,100 @@
-//TODO: check .ics specifications
+var exportArray = [];
 
 function generateICS(startYear, startMonth, startDay, items) {
+    //Filter "items" array so that only lecture events are created
+    var lectures = items.filter(function (item) {
+        return item.type == "Lecture";
+    });
 
-    var exportArray = [];
-    var headersArray = ["Subject", "Start Date", "Start Time", "End Date", "End Time", "All Day Event", "Location", "Private"];
+    //loop through lectures
+    for (var i = 0; i < lectures.length; i++) {
+        var currentItem = lectures[i];
+        //get the weeks property
+        var weeks = currentItem["weeks"];
+        //extract correctly formatted start and end times
+        var times = extractTimeICS(currentItem["times"]);
+        //get day offsets for the current item
+        var dayOffset = getDayOffset(currentItem["day"]);
+        //loop the weeks array to create events for one item corresponding to all weeks
+        for (var k = 0; k < weeks.length; k++) {
+            //get the week offset - that is how many days need to be added to the initial date
+            var weekOffset = (parseInt(weeks[k]) - 1) * 7;
+            //create the date object for all the events for a particular item
+            var date = new Date(startYear, startMonth, (startDay + dayOffset + weekOffset));
+            //format dates to ICS standard (date + T + time + Z)
+            var dateStart = formatDateICS(date, times["start"]);
+            var dateEnd = formatDateICS(date, times["end"]);
 
-    var n = 0;
+            //get current date info & create a time stamp
+            var currentDate = new Date();
+            var currentHours = currentDate.getHours().toString();
+            var currentMinutes = currentDate.getMinutes().toString();
+            if (currentHours.length == 1) currentHours = "0" + currentHours;
+            var dateStamp = formatDateICS(currentDate, currentHours + currentMinutes + "00");
 
-    var numberOfEvents = items.length;
-
-    for (i = 0; i < numberOfEvents; i++) {
-        if (items[i].type.indexOf("Lecture") !== -1) {
-
-            var numberOfWeeks = items[i].weeks.length;
-
-            var weekNumber;
-            var dayOffset;
-
-            switch (items[i].day) {
-                case "Monday":
-                    dayOffset = 0;
-                    break;
-                case "Tuesday":
-                    dayOffset = 1;
-                    break;
-                case "Wednesday":
-                    dayOffset = 2;
-                    break;
-                case "Thursday":
-                    dayOffset = 3;
-                    break;
-                case "Friday":
-                    dayOffset = 4;
-                    break;
-                case "Saturday":
-                    dayOffset = 5;
-                    break;
-                case "Sunday":
-                    dayOffset = 6;
-                    break;
-            }
-
-
-            var newEvent = new Array(numberOfWeeks);
-            for (var j = 0; j < numberOfWeeks; j++) {
-                newEvent[j] = new Array(8);
-            }
-
-
-            for (j = 0; j < numberOfWeeks; j++) {
-
-                var date = new Date(startYear, startMonth, startDay);
-
-                if (items[i].weeks[j] <= 5) {
-                    weekNumber = items[i].weeks[j];
-                } else {
-                    weekNumber = parseInt(items[i].weeks[j]) + 1;
-                }
-
-                date.setDate(date.getDate() + (weekNumber - 1) * 7 + dayOffset);
-
-                var newDate = date.toISOString().split("T");
-                var newNewDate = newDate[0].split("-");
-
-                var time = items[i].times.split(",");
-                var newTime1 = time[0].split(":");
-                var newTime2 = time[1].split(":");
-
-                newEvent[j][0] = items[i].course + " (" + items[i].type + ")";
-                newEvent[j][1] = newNewDate[0] + newNewDate[1] + newNewDate[2] + "T" + newTime1[1] + newTime1[2] + "00";
-                newEvent[j][2] = time[0].substring(6) + ":00";
-                newEvent[j][3] = newNewDate[0] + newNewDate[1] + newNewDate[2] + "T" + newTime2[1] + newTime2[2] + "00";
-                newEvent[j][4] = time[1].substring(4) + ":00";
-                newEvent[j][5] = "False";
-                newEvent[j][6] = items[i].location;
-                newEvent[j][7] = "True";
-
-                exportArray[n + j] = {
-                    subject: newEvent[j][0],
-                    startDate: newEvent[j][1],
-                    startTime: newEvent[j][2],
-                    endDate: newEvent[j][3],
-                    endTime: newEvent[j][4],
-                    allDayEvent: newEvent[j][5],
-                    location: newEvent[j][6],
-                    private: newEvent[j][7]
-                };
-
-
-            }
-
-            n += numberOfWeeks;
-
+            //push events to the export array
+            exportArray.push({
+                subject: currentItem["course"],
+                startDate: dateStart,
+                endDate: dateEnd,
+                dateStamp: dateStamp,
+                location: currentItem["location"]
+            });
         }
     }
-
     return exportArray;
-
 }
+
+
+function getDayOffset(day) {
+    var dayOffset;
+    switch (day) {
+        case "Monday":
+            dayOffset = 0;
+            break;
+        case "Tuesday":
+            dayOffset = 1;
+            break;
+        case "Wednesday":
+            dayOffset = 2;
+            break;
+        case "Thursday":
+            dayOffset = 3;
+            break;
+        case "Friday":
+            dayOffset = 4;
+            break;
+        case "Saturday":
+            dayOffset = 5;
+            break;
+        case "Sunday":
+            dayOffset = 6;
+            break;
+    }
+    return dayOffset;
+}
+
+function extractTimeICS(timeProperty) {
+    var times = timeProperty.split(",");
+    var start = times[0].substr(6);
+    var end = times[1].substr(4);
+    return {start: formatTimeICS(start), end: formatTimeICS(end)};
+}
+
+function formatTimeICS(time) {
+    var hour = time.split(":")[0];
+    if (hour.length == 1) hour = "0" + hour;
+    var minutes = time.split(":")[1];
+    return hour + minutes + "00";
+}
+
+function formatDateICS(date, time) {
+    var month = (date.getMonth() + 1).toString();
+    var day = date.getDate().toString();
+    if (month.length == 1) month = "0" + month;
+    if (day.length == 1) day = "0" + day;
+    return date.getFullYear().toString() + month + day + 'T' + time + "Z";
+}
+
 
 module.exports = generateICS;

@@ -18,6 +18,17 @@ var users = require('./routes/users');
 
 var app = express();
 
+/*
+    App parameters
+    Enter year, (month-1) and day when the semester starts (Monday of the study week 1)
+*/
+var startYear = 2015;
+var startMonth = 8;
+var startDay = 21;
+
+var skipWeek = false;
+var url = "https://browser.ted.is.ed.ac.uk/generate?courses[]=BITE10013_SS1_YR&courses[]=BITE10002_SV1_SEM1&courses[]=BITE10001_SV1_SEM1&courses[]=BITE10007_SV1_YR&courses[]=BITE10006_SV1_SEM2&courses[]=CMSE10002_SV1_SEM1&show-close=1&show-close=1&period=SEM1";
+
 //app.set('port', process.env.PORT || 3000);
 app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3002);
 app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
@@ -44,7 +55,7 @@ app.use('/users', users);
 
 app.get('/csvexport', function (req, res) {
     //url = 'https://browser.ted.is.ed.ac.uk/generate?courses[]=BILG09014_SV1_SEM2&courses[]=BUST10118_SV1_SEM2&courses[]=BUST10021_SV1_SEM2&show-close=1&period=SEM2#';
-    url = "https://browser.ted.is.ed.ac.uk/generate?courses[]=BITE10013_SS1_YR&courses[]=BITE10002_SV1_SEM1&courses[]=BITE10001_SV1_SEM1&courses[]=BITE10007_SV1_YR&courses[]=BITE10006_SV1_SEM2&courses[]=CMSE10002_SV1_SEM1&show-close=1&show-close=1&period=SEM1";
+
     request(url, function (error, response, html) {
         if (!error) {
             var $ = cheerio.load(html);
@@ -92,8 +103,8 @@ app.get('/csvexport', function (req, res) {
                 });
             });
 
-            downloadCSV(items);
-            downloadICS(items);
+            downloadCSV(startYear, startMonth, startDay, items);
+            downloadICS(startYear, startMonth, startDay, items);
 
         } else {
             console.log('url request failed');
