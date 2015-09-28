@@ -1,8 +1,15 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+table.toggle-table {
+    padding: 8px;
+    line-height: 1.42857143;
+    vertical-align: middle;
+    text-align: center;
 }
 
-a {
-  color: #00B7FF;
+td, th {
+    padding: 10px 20px;
+    width:70px;
+}
+
+img.icon {
+    height: 120px;
 }

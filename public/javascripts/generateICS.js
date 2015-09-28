@@ -33,13 +33,16 @@ function generateICS(startYear, startMonth, startDay, items) {
             if (currentMinutes.length == 1) currentMinutes = "0" + currentMinutes;
             var dateStamp = formatDateICS(currentDate, currentHours + currentMinutes + "00");
 
+            //format location so that it maches specification
+            var location = formatLocationICS(currentItem["location"]);
+
             //push events to the export array
             exportArray.push({
                 subject: currentItem["course"],
                 startDate: dateStart,
                 endDate: dateEnd,
                 dateStamp: dateStamp,
-                location: currentItem["location"]
+                location: location
             });
         }
     }
@@ -97,5 +100,14 @@ function formatDateICS(date, time) {
     return date.getFullYear().toString() + month + day + 'T' + time;
 }
 
+function formatLocationICS(location) {
+    var formattedLocation = "";
+    var locations = location.split(",");
+    for (var i = 0; i < locations.length; i++) {
+        formattedLocation += locations[i];
+        if (i + 1 != locations.length) formattedLocation += "\\,";
+    }
+    return formattedLocation;
+}
 
 module.exports = generateICS;

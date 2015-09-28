@@ -17,7 +17,6 @@ function generateCSV(startYear, startMonth, startDay, items) {
     var lectures = items.filter(function (item) {
         return item.type == "Lecture";
     });
-    console.log(lectures);
 
     //loop through lectures
     for (var i = 0; i < lectures.length; i++) {
@@ -45,7 +44,7 @@ function generateCSV(startYear, startMonth, startDay, items) {
                 endTime: times["endTime"],
                 allDayEvent: false,
                 location: '\"' + currentItem["location"] + '\"',
-                private: true
+                private: false
             });
         }
     }
